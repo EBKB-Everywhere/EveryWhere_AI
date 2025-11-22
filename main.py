@@ -346,7 +346,6 @@ async def health_check():
     """헬스 체크 엔드포인트"""
     return {"status": "healthy", "service": "AI Space Recommendation API"}
 
-#test
 # ═══════════════════════════════════════════════════════
 # 메인 실행
 # ═══════════════════════════════════════════════════════
