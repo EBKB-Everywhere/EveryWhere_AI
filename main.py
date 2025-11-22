@@ -16,6 +16,7 @@ REQUIRED_PACKAGES = {
     'pydantic': 'pydantic'
 }
 
+
 missing_packages = []
 
 for module_name, package_name in REQUIRED_PACKAGES.items():
@@ -31,6 +32,7 @@ if missing_packages:
     print("\n💡 다음 명령어로 설치하세요:")
     print(f"   pip install {' '.join(missing_packages)}")
     sys.exit(1)
+
 
 import json
 from typing import List, Dict, Any, Optional
@@ -308,6 +310,7 @@ async def health_check():
     """헬스 체크 엔드포인트"""
     return {"status": "healthy", "service": "AI Space Recommendation API"}
 
+#test
 # ═══════════════════════════════════════════════════════
 # 메인 실행
 # ═══════════════════════════════════════════════════════
