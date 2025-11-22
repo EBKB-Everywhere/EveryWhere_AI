@@ -38,6 +38,7 @@ import json
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+from reco import recommend_rooms  #  추천 모델 함수
 import pymysql
 from contextlib import contextmanager
 
@@ -79,6 +80,11 @@ class NLPResponse(BaseModel):
     placeFlag: int
     placeLat: float
     placeLng: float
+
+class RecommendRequest(BaseModel):
+    # reco.py에서 사용하는 candidate_rooms 그대로 맞춤
+    candidateRooms: List[Dict[str, Any]]
+
 
 # ═══════════════════════════════════════════════════════
 # DB 연결 관리
@@ -304,6 +310,36 @@ async def nlp_endpoint(request: NLPRequest):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"NLP 모델 실행 중 오류: {str(e)}")
+    
+@app.post("/api/internal/ai/recommend")
+async def recommend_endpoint(request: RecommendRequest):
+    """
+    추천 모델 2 API
+
+    Body 예시:
+    {
+      "candidateRooms": [
+        {
+          "spaceId": 201,
+          "spaceName": "중앙도서관",
+          "purposeScore": 0.9,
+          "distanceFeature": 0.88,
+          "predictCount": 18,
+          "capacity": 40
+        },
+        ...
+      ]
+    }
+
+    -> reco.recommend_rooms() 호출해서 최종 점수 계산
+    """
+    try:
+        result = recommend_rooms(request.candidateRooms)
+        return {"results": result}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"추천 모델 실행 오류: {str(e)}")
+
 
 @app.get("/health")
 async def health_check():
